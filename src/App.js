@@ -1,55 +1,57 @@
-import { useMemo,useState } from "react";
-
-function App() {
-
-  const genders=[
-    {key:'1',value:'erkek'},
-    {key:'2',value:'kadin'},
-  ]
-  const categoryList=[
-    {key:'1',value:'php'},
-    {key:'2',value:'javascript'},
-    {key:'3',value:'css'},
-    {key:'4',value:'html'},
-  ]
-  const [name,setName]=useState('baris')
-  const [description,setDescription]=useState('')
-  const [gender,setGender]=useState('')
-  const [categories,setCategories]=useState([])
-
-  const selectedGender=genders.find(g=>g.key==gender)
+import { useEffect,useState } from "react";
 
 
-  return (
-    <>
-    <button onClick={()=>setName('ahmet')}>adi degistir</button>
-    <input type="text" value={name} onChange={e=>setName(e.target.value)} /><br />
+function App(){
+  
+  const [users,setUsers]=useState(false)
 
-    <textarea value={description} onChange={e=>setDescription(e.target.value)}></textarea>
-    ad:{name}
-    <br />
-    desc:{description}
-
-    <select value={gender} onChange={e=>setGender(e.target.value)}>
-      <option value=''>seçin</option>
-      {genders.map((gender)=>(
-        <option value={gender.key} key={gender.key}>{gender.value}</option>
-      ))}
-    </select ><br /><br /><br />
-
-    <select value={categories} multiple={true} onChange={e=>setCategories([...e.target.selectedOptions].map(option=>parseInt(option.value)))}>
-      <option value=''>seçin</option>
-      {categoryList.map((category)=>(
-        <option value={category.key} key={category.key}>{category.value}</option>
-      ))}
-    </select ><br /><br /><br />
-
-    {/* cinsiyet:{selectGender} */}
-
-    <pre>{JSON.stringify(categories,null,2)}</pre>
-    
-    </>
-  )
+  const addpost= data =>{
+    fetch('https://jsonplaceholder.typicode.com/posts',{
+      method:'POST',
+      body:JSON.stringify(data),
+      headers:{
+        'Content-type':'application/json',
+        'Authorization':'Bearer 4567987678945231'
       }
+    })
+    .then(res=>res.json())
+    .then(data=>console.log(data))
+    .catch(err=>console.log(err))
+  }
+
+
+  useEffect(()=>{
+
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(res=>{
+      if(res.ok && res.status==200){
+        return res.json()
+      }
+    })
+    .then(data=>setUsers(data))
+    .catch(err=>console.log(err))
+
+    addpost({
+      userID:1,
+      title:'ornek post',
+      body:'post icerigi"'
+    })
+
+  },[]);
+  return (
+   <>
+   <ul>
+{users&&users.map(user=>(
+  <li style={{textDecoration:'underline red',fontSize:'25px'}}>
+    name:{user.name} id:{user.id} username:{user.username}
+
+  </li>
+  
+))}
+</ul>
+   </>
+  );
+
+}
 
 export default App;
