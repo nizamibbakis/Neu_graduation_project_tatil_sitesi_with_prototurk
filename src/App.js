@@ -51,13 +51,7 @@ const App = () => {
             </li>
           ))}
         </ul>
-        <div>
-          <ul>
-            <li>
-              
-            </li>
-          </ul>
-        </div>
+        
       </div>
     </>
   );
