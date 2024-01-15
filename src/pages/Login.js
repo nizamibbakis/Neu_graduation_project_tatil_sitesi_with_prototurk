@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+const Login = ({ setLoggedIn }) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3001/login', {
+      const response = await fetch('http://localhost:3001/Login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export default function Login() {
       const data = await response.json();
       console.log('Giriş başarılı:', data);
 
-      // Başarılı giriş sonrasında sayfa yönlendirmesi ve bilgi mesajı
+      setLoggedIn(true);
       navigate('/');
       window.alert('Giriş başarılı!');
     } catch (error) {
@@ -44,7 +44,7 @@ export default function Login() {
 
   return (
     <div>
-      <hr />
+      
 
       <h2>Giriş Yap</h2>
       <form onSubmit={handleSubmit}>
@@ -62,4 +62,6 @@ export default function Login() {
       </form>
     </div>
   );
-}
+};
+
+export default Login;

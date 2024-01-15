@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const navigate = useNavigate(); // useNavigate hook'u
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     user_name: '',
@@ -20,57 +20,53 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3001/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+        const response = await fetch('http://localhost:3001/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Ağ yanıtı uygun değil');
       }
 
       const data = await response.json();
-      console.log('Registration successful:', data);
+      console.log('Kayıt başarılı:', data);
 
-      // Başarılı kayıt sonrasında sayfa yönlendirmesi ve bilgi mesajı
-      navigate('/'); // '/app' sayfa yoluna yönlendirilebilirsiniz
-      window.alert('Kayıt başarılı!');
+      if (response.status === 200) {
+        navigate('/login');
+        window.alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+      } else {
+        window.alert(data.message);
+      }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Hata:', error.message);
     }
   };
 
   return (
-    
     <div>
-      <hr />
-
-      <h2>Üye ol</h2>
+      <h2>Üye Ol</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Ad:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div>
+          <label>Ad:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
           <input type="text" name="user_name" value={formData.user_name} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Soyad:
+        </div>
+        <div>
+          <label>Soyad:</label>
           <input type="text" name="user_surname" value={formData.user_surname} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Email:
+        </div>
+        <div>
+          <label>Email:</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Parola:
+        </div>
+        <div>
+          <label>Parola:</label>
           <input type="password" name="password" value={formData.password} onChange={handleChange} />
-        </label>
-        &nbsp;<br>
-        </br>
+        </div>
+        <br />
         <button type="submit">Kaydol</button>
       </form>
     </div>
