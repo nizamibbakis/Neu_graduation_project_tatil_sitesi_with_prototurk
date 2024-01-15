@@ -2,9 +2,13 @@ const express = require('express');
 const app = express();
 const sql = require('mssql');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json()); // JSON verileri için
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
-const port = 3001; // İstediğiniz bir port numarasını seçin
+const port = 3001; 
 
 const config = {
     user: 'sa',
@@ -17,7 +21,6 @@ const config = {
     },
 };
 
-// Veritabanı bağlantısını başlatan fonksiyon
 const connectDB = async () => {
   try {
     await sql.connect(config);
@@ -27,7 +30,6 @@ const connectDB = async () => {
   }
 };
 
-// Veritabanı bağlantısını sonlandıran fonksiyon
 const disconnectDB = () => {
   sql.close();
   console.log('MSSQL veritabanı bağlantısı kapatıldı');
@@ -40,7 +42,6 @@ app.get('/', async (req, res) => {
   try {
     counter++;
     console.log(`Sayfa yenilendi. Sayaç: ${counter}`);
-    // Bağlantıyı başlat
     await connectDB();
 
     const result = await sql.query('SELECT * FROM users');
@@ -50,7 +51,26 @@ app.get('/', async (req, res) => {
     console.error('Veritabanı hatası: ', err);
     res.status(500).send('Veritabanı hatası');
   } finally {
-    // Bağlantıyı sonlandır
+    disconnectDB();
+  }
+});
+
+app.post('/', async (req, res) => {
+  try {
+    await connectDB();
+
+    const { user_name, user_surname, email,password,user_photo1 } = req.body;
+
+    const result = await sql.query(`
+      INSERT INTO users (user_name, user_surname, email,password,user_photo1)
+      VALUES ('${user_name}', '${user_surname}', '${email}', '${password}', '${user_photo1}');
+    `);
+
+    res.status(200).json({ message: 'Kullanıcı başarıyla kaydedildi.' });
+  } catch (err) {
+    console.error('Veritabanı hatası: ', err);
+    res.status(500).send('Veritabanı hatası');
+  } finally {
     disconnectDB();
   }
 });
