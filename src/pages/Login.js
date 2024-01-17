@@ -1,7 +1,9 @@
+// Login.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ setLoggedIn }) => {
+const Login = ({ setLoggedIn, setUserId }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -33,7 +35,9 @@ const Login = ({ setLoggedIn }) => {
       console.log('Giriş başarılı:', data);
 
       setLoggedIn(true);
+      setUserId(data.user_id); // user_id'yi localStorage'e kaydet
       localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userId', data.user_id);
       navigate('/');
       window.alert('Giriş başarılı!');
     } catch (error) {

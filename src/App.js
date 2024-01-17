@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 const App = () => {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -18,7 +19,9 @@ const App = () => {
 
   const handleLogout = () => {
     setLoggedIn(false);
+    setUserId(null);
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userId');
     navigate('/');
   };
 
@@ -42,18 +45,20 @@ const App = () => {
           )}
         </div>
       </nav>
-        <hr />
+      <hr />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/Login" element={<Login setLoggedIn={setLoggedIn} setUserId={setUserId} />} />
         <Route path="/register" element={<Register />} />
         {loggedIn ? (
-          <Route path="/Profile" element={<Profile />} />
+          <Route
+            path="/Profile"
+            element={<Profile user_id={userId} />} // user_id'yi Profile sayfasına gönder
+          />
         ) : (
           <Route path="/Profile" element={<Navigate to="/" />} />
         )}
       </Routes>
-      <div></div>
     </>
   );
 };
