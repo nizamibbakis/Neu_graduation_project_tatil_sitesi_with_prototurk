@@ -1,3 +1,5 @@
+// App.js
+
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Link, Navigate, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
@@ -48,7 +50,7 @@ const App = () => {
         {loggedIn ? (
           <Route path="/Profile" element={<Profile />} />
         ) : (
-          <Route path="/Profile" element={<Navigate to="/Login" />} />
+          <Route path="/Profile" element={<Navigate to="/" />} />
         )}
       </Routes>
       <div></div>

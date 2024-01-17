@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setLoggedIn }) => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -35,6 +33,7 @@ const Login = ({ setLoggedIn }) => {
       console.log('Giriş başarılı:', data);
 
       setLoggedIn(true);
+      localStorage.setItem('isLoggedIn', 'true');
       navigate('/');
       window.alert('Giriş başarılı!');
     } catch (error) {
@@ -42,10 +41,15 @@ const Login = ({ setLoggedIn }) => {
     }
   };
 
+  // Oturum açıkken Login sayfasına gelindiğinde yönlendirme yap
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  if (isLoggedIn) {
+    navigate('/');
+    return null;
+  }
+
   return (
     <div>
-      
-
       <h2>Giriş Yap</h2>
       <form onSubmit={handleSubmit}>
         <label>
