@@ -27,6 +27,7 @@ const connectDB = async () => {
   try {
     await sql.connect(config);
     console.log('MSSQL veritabanına bağlandı');
+
   } catch (err) {
     console.error('Bağlantı hatası:', err);
   }
