@@ -109,24 +109,24 @@ const Profile = ({ user_id }) => {
 
   const handleNewAd = async () => {
     try {
-      // Yeni ilan eklemek için backend endpoint'ini çağır
+      const formData = new FormData();
+      formData.append("photo", newAdData.ad_photo1);
+
       const response = await fetch(`http://localhost:3001/addAd/${user_id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newAdData),
+        method: "POST",
+        body: formData,
       });
-  
+
       if (!response.ok) {
-        throw new Error('İlan eklenemedi.');
+        throw new Error("İlan eklenemedi.");
       }
-  
-      // İlanlarınızı yeniden çekmek için
-      const newData = await fetch(`http://localhost:3001/getUsers/${user_id}`).then((response) => response.json());
+
+      const newData = await fetch(
+        `http://localhost:3001/getUsers/${user_id}`
+      ).then((response) => response.json());
       setUserData(newData[0]);
     } catch (error) {
-      console.error('İlan eklenirken bir hata oluştu:', error);
+      console.error("İlan eklenirken bir hata oluştu:", error);
     }
   };
 
@@ -228,18 +228,15 @@ const Profile = ({ user_id }) => {
               type="text"
               id="adAddress"
               value={newAdData.ad_address}
-              onChange={(e) =>
-                handleInputChange("ad_address", e.target.value)
-              }
+              onChange={(e) => handleInputChange("ad_address", e.target.value)}
             />
 
             <label htmlFor="adPhoto">Fotoğraf Linki:</label>
             <input
-              type="text"
+              type="file"
               id="adPhoto"
-              value={newAdData.ad_photo1}
               onChange={(e) =>
-                handleInputChange("ad_photo1", e.target.value)
+                handleInputChange("ad_photo1", e.target.files[0])
               }
             />
 
@@ -251,9 +248,7 @@ const Profile = ({ user_id }) => {
           <h2>İlanlarım</h2>
           <ul>
             {userData && userData.ads ? (
-              userData.ads.map((ad) => (
-                <li key={ad.ad_id}>{ad.ad_name}</li>
-              ))
+              userData.ads.map((ad) => <li key={ad.ad_id}>{ad.ad_name}</li>)
             ) : (
               <p>Kullanıcının ilanı bulunmamaktadır.</p>
             )}
