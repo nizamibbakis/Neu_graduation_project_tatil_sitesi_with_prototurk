@@ -5,6 +5,8 @@ const app = express();
 const sql = require('mssql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,6 +24,18 @@ const config = {
     trustServerCertificate: true,
   },
 };
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // uploads klasörüne kaydedilecek
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Dosya adı benzersiz olacak
+  }
+});
+
+const upload = multer({ storage: storage });
 
 const connectDB = async () => {
   try {
@@ -169,12 +183,15 @@ app.put('/updateUserSurname/:user_id', async (req, res) => {
   }
 });
 
-app.post('/addAd/:user_id', async (req, res) => {
+app.post('/addAd/:user_id', upload.single('ad_photo1'), async (req, res) => {
   try {
     await connectDB();
 
     const { user_id } = req.params;
-    const { ad_name, ad_price, ad_description, ad_description2, ad_description3, ad_adress, ad_photo1 } = req.body;
+    const { ad_name, ad_price, ad_description, ad_description2, ad_description3, ad_adress } = req.body;
+
+    // Yüklenen dosyanın yolu req.file içinde bulunmaktadır
+    const ad_photo1 = req.file ? req.file.path : null;
 
     const result = await sql.query(`
       INSERT INTO ads (ad_name, ad_price, ad_description, ad_description2, ad_description3, user_id, ad_adress, ad_photo1)

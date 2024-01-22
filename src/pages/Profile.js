@@ -1,5 +1,3 @@
-// Profile.js
-
 import React, { useState, useEffect } from "react";
 
 const Profile = ({ user_id }) => {
@@ -15,7 +13,7 @@ const Profile = ({ user_id }) => {
     ad_description2: "Açıklama 2",
     ad_description3: "Açıklama 3",
     ad_address: "Adres",
-    ad_photo1: "Fotoğraf Linki",
+    ad_photo1: null, // Dosya yükleme işlemi için null olarak başlatın
   });
 
   useEffect(() => {
@@ -110,8 +108,11 @@ const Profile = ({ user_id }) => {
   const handleNewAd = async () => {
     try {
       const formData = new FormData();
-      formData.append("photo", newAdData.ad_photo1);
+      for (const key in newAdData) {
+        formData.append(key, newAdData[key]);
+      }
 
+      // Yeni ilan eklemek için backend endpoint'ini çağır
       const response = await fetch(`http://localhost:3001/addAd/${user_id}`, {
         method: "POST",
         body: formData,
@@ -121,6 +122,7 @@ const Profile = ({ user_id }) => {
         throw new Error("İlan eklenemedi.");
       }
 
+      // İlanlarınızı yeniden çekmek için
       const newData = await fetch(
         `http://localhost:3001/getUsers/${user_id}`
       ).then((response) => response.json());
