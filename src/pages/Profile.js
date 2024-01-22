@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = ({ user_id }) => {
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [updatedUserName, setUpdatedUserName] = useState("");
   const [updatedUserSurname, setUpdatedUserSurname] = useState("");
@@ -14,7 +16,7 @@ const Profile = ({ user_id }) => {
     ad_description2: "Açıklama 2",
     ad_description3: "Açıklama 3",
     ad_adress: "Adres",
-    ad_photo1: null, // Dosya yükleme işlemi için null olarak başlatın
+    ad_photo1: null,
   });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const Profile = ({ user_id }) => {
           console.error("İlanlar getirme hatası:", error);
           setLoading(false);
         });
-  
+
       fetch(`http://localhost:3001/getUsers/${user_id}`)
         .then((response) => {
           if (!response.ok) {
@@ -50,17 +52,13 @@ const Profile = ({ user_id }) => {
           console.error("Veri çekme hatası:", error);
           setLoading(false);
         });
-  
+
       // İlanları çek
       fetchAds();
     } else {
       setLoading(false);
     }
   }, [user_id]);
-  
-
-
-
 
   const updateUserName = async () => {
     try {
@@ -151,28 +149,29 @@ const Profile = ({ user_id }) => {
         `http://localhost:3001/getUsers/${user_id}`
       ).then((response) => response.json());
       setUserData(newData[0]);
+      
+      // İlan ekledikten sonra kullanıcıyı başka bir sayfaya yönlendir
+      navigate('/');
+      window.location.reload(false);
     } catch (error) {
       console.error("İlan eklenirken bir hata oluştu:", error);
     }
   };
 
-
   const fetchAds = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/getUserAds/${user_id}`);
-        if (!response.ok) {
-          throw new Error("İlanlar getirilemedi.");
-        }
-        const data = await response.json();
-        setAds(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("İlanlar getirme hatası:", error);
-        setLoading(false);
+    try {
+      const response = await fetch(`http://localhost:3001/getUserAds/${user_id}`);
+      if (!response.ok) {
+        throw new Error("İlanlar getirilemedi.");
       }
-    };
-
-  
+      const data = await response.json();
+      setAds(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("İlanlar getirme hatası:", error);
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -257,7 +256,7 @@ const Profile = ({ user_id }) => {
               }
             />
 
-            <label htmlFor="adDescription3">Açıklama 3:</label>
+            <label htmlFor="adDescription3">İletişim-Tel:</label>
             <input
               type="text"
               id="adDescription3"
@@ -291,21 +290,19 @@ const Profile = ({ user_id }) => {
         <div>
           <h2>İlanlarım</h2>
           <ul style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, flexWrap: 'wrap', justifyContent: 'space-around' }}>
-          {ads.map((ad) => (
-            <li key={ad.ad_id} style={{ border: '3px solid #ddd', marginBottom: '10px', width: '400px', padding: '10px' }}>
-              <h3>{ad.ad_name}</h3>
-              <p>Fiyat: {ad.ad_price}</p>
-              <p>Açıklama 1: {ad.ad_description}</p>
-              <p>Açıklama 2: {ad.ad_description2}</p>
-              <p>Açıklama 3: {ad.ad_description3}</p>
-              <p>Adres: {ad.ad_adress}</p>
-              {ad.ad_photo1 && <img src={`http://localhost:3001/${ad.ad_photo1}`} alt={ad.ad_photo1} style={{ maxWidth: '100%', height: 'auto' }} />}
-              {/* İlgili diğer bilgileri de burada gösterebilirsiniz */}
-            </li>
-          ))}
-        </ul>
-
-
+            {ads.map((ad) => (
+              <li key={ad.ad_id} style={{ border: '3px solid #ddd', marginBottom: '10px', width: '400px', padding: '10px' }}>
+                <h3>{ad.ad_name}</h3>
+                <p>Fiyat: {ad.ad_price} TL</p>
+                <p>Açıklama 1: {ad.ad_description}</p>
+                <p>Açıklama 2: {ad.ad_description2}</p>
+                <p>İletişim-Tel: {ad.ad_description3}</p>
+                <p>Adres: {ad.ad_adress}</p>
+                {ad.ad_photo1 && <img src={`http://localhost:3001/${ad.ad_photo1}`} alt={ad.ad_photo1} style={{ maxWidth: '100%', height: 'auto' }} />}
+                {/* İlgili diğer bilgileri de burada gösterebilirsiniz */}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

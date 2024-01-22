@@ -43,10 +43,10 @@ const Home = () => {
       {ads.map((ad) => (
         <li key={ad.ad_id} style={{ border: '3px solid #ddd', marginBottom: '10px', width: '400px', padding: '10px' }}>
           <h3>{ad.ad_name}</h3>
-        <p>Fiyat: {ad.ad_price}</p>
+        <p>Fiyat: {ad.ad_price} TL</p>
         <p>Açıklama 1: {ad.ad_description}</p>
         <p>Açıklama 2: {ad.ad_description2}</p>
-        <p>Açıklama 3: {ad.ad_description3}</p>
+        <p>İletişim-Tel: {ad.ad_description3}</p>
         <p>Adres: {ad.ad_adress}</p>
           {/* {ad.ad_photo1 && <img src={ad.ad_photo1} alt={ad.ad_photo1} style={{ maxWidth: '100%', height: 'auto' }} />} */}
           {ad.ad_photo1 && <img src={`http://localhost:3001/${ad.ad_photo1}`} alt={ad.ad_photo1} style={{ maxWidth: '100%', height: 'auto' }} />}

@@ -33,7 +33,7 @@ const AdList = () => {
           {ads.map((ad) => (
             <li key={ad.ad_id}>
               <h3>{ad.ad_name}</h3>
-              <p>Fiyat: {ad.ad_price}</p>
+              <p>Fiyat: {ad.ad_price} TL</p>
               <p>Açıklama: {ad.ad_description}</p>
               {/* İlgili diğer bilgileri de burada gösterebilirsiniz */}
             </li>

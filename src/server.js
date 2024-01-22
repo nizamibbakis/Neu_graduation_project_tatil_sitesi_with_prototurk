@@ -202,7 +202,6 @@ app.post('/addAd/:user_id', upload.single('ad_photo1'), async (req, res) => {
     const { user_id } = req.params;
     const { ad_name, ad_price, ad_description, ad_description2, ad_description3, ad_adress } = req.body;
 
-    // Yüklenen dosyanın yolu req.file içinde bulunmaktadır
     const ad_photo1 = req.file ? req.file.path : null;
 
     const result = await sql.query(`
