@@ -67,6 +67,7 @@ const Login = ({ setLoggedIn, setUserId }) => {
         </label>
         <br />
         <button type="submit">Giriş Yap</button>
+        <h3>Giriş yaparak kendi ev-otel odası-villa-bungalov ilanlarınızı girebilirsiniz.</h3>
       </form>
     </div>
   );

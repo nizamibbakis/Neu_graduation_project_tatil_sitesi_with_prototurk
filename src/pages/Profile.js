@@ -5,6 +5,7 @@ const Profile = ({ user_id }) => {
   const [loading, setLoading] = useState(true);
   const [updatedUserName, setUpdatedUserName] = useState("");
   const [updatedUserSurname, setUpdatedUserSurname] = useState("");
+  const [ads, setAds] = useState([]);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [newAdData, setNewAdData] = useState({
     ad_name: "Yeni İlan",
@@ -12,12 +13,28 @@ const Profile = ({ user_id }) => {
     ad_description: "Açıklama 1",
     ad_description2: "Açıklama 2",
     ad_description3: "Açıklama 3",
-    ad_address: "Adres",
+    ad_adress: "Adres",
     ad_photo1: null, // Dosya yükleme işlemi için null olarak başlatın
   });
 
   useEffect(() => {
     if (user_id) {
+      fetch(`http://localhost:3001/getUserAds/${user_id}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("İlanlar getirilemedi.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setAds(data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("İlanlar getirme hatası:", error);
+          setLoading(false);
+        });
+  
       fetch(`http://localhost:3001/getUsers/${user_id}`)
         .then((response) => {
           if (!response.ok) {
@@ -33,10 +50,17 @@ const Profile = ({ user_id }) => {
           console.error("Veri çekme hatası:", error);
           setLoading(false);
         });
+  
+      // İlanları çek
+      fetchAds();
     } else {
       setLoading(false);
     }
   }, [user_id]);
+  
+
+
+
 
   const updateUserName = async () => {
     try {
@@ -132,6 +156,24 @@ const Profile = ({ user_id }) => {
     }
   };
 
+
+  const fetchAds = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/getUserAds/${user_id}`);
+        if (!response.ok) {
+          throw new Error("İlanlar getirilemedi.");
+        }
+        const data = await response.json();
+        setAds(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("İlanlar getirme hatası:", error);
+        setLoading(false);
+      }
+    };
+
+  
+
   return (
     <div>
       <h1>Profil Sayfası</h1>
@@ -225,12 +267,12 @@ const Profile = ({ user_id }) => {
               }
             />
 
-            <label htmlFor="adAddress">Adres:</label>
+            <label htmlFor="adAdress">Adres:</label>
             <input
               type="text"
-              id="adAddress"
-              value={newAdData.ad_address}
-              onChange={(e) => handleInputChange("ad_address", e.target.value)}
+              id="adAdress"
+              value={newAdData.ad_adress}
+              onChange={(e) => handleInputChange("ad_adress", e.target.value)}
             />
 
             <label htmlFor="adPhoto">Fotoğraf Linki:</label>
@@ -248,13 +290,22 @@ const Profile = ({ user_id }) => {
         </div>
         <div>
           <h2>İlanlarım</h2>
-          <ul>
-            {userData && userData.ads ? (
-              userData.ads.map((ad) => <li key={ad.ad_id}>{ad.ad_name}</li>)
-            ) : (
-              <p>Kullanıcının ilanı bulunmamaktadır.</p>
-            )}
-          </ul>
+          <ul style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, flexWrap: 'wrap', justifyContent: 'space-around' }}>
+          {ads.map((ad) => (
+            <li key={ad.ad_id} style={{ border: '3px solid #ddd', marginBottom: '10px', width: '400px', padding: '10px' }}>
+              <h3>{ad.ad_name}</h3>
+              <p>Fiyat: {ad.ad_price}</p>
+              <p>Açıklama 1: {ad.ad_description}</p>
+              <p>Açıklama 2: {ad.ad_description2}</p>
+              <p>Açıklama 3: {ad.ad_description3}</p>
+              <p>Adres: {ad.ad_adress}</p>
+              {ad.ad_photo1 && <img src={`http://localhost:3001/${ad.ad_photo1}`} alt={ad.ad_photo1} style={{ maxWidth: '100%', height: 'auto' }} />}
+              {/* İlgili diğer bilgileri de burada gösterebilirsiniz */}
+            </li>
+          ))}
+        </ul>
+
+
         </div>
       </div>
     </div>

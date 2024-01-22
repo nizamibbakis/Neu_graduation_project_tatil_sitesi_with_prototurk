@@ -10,6 +10,8 @@ const path = require('path');
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
+
 
 app.use(cors());
 const port = 3001;
@@ -25,13 +27,23 @@ const config = {
   },
 };
 
+// görsele random isim veriyordu 
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads/'); 
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Dosya adı benzersiz olacak
+//   }
+// });
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // uploads klasörüne kaydedilecek
+    cb(null, 'uploads/'); 
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); // Dosya adı benzersiz olacak
+    cb(null, file.originalname); // Dosya adı değiştirilmeden korunacak
   }
 });
 
@@ -217,6 +229,40 @@ app.get('/getUserAds/:user_id', async (req, res) => {
       SELECT * FROM ads
       WHERE user_id = '${user_id}';
     `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Veritabanı hatası: ', err);
+    res.status(500).send('Veritabanı hatası');
+  } finally {
+    disconnectDB();
+  }
+});
+
+// app.get('/getUsers', async (req, res) => {
+//   try {
+//     counter++;
+//     console.log(`Sayfa yenilendi. Sayaç-getUsers: ${counter}`);
+//     await connectDB();
+
+//     const result = await sql.query('SELECT * FROM users');
+
+
+    
+//     res.json(result.recordset);
+//   } catch (err) {
+//     console.error('Veritabanı hatası: ', err);
+//     res.status(500).send('Veritabanı hatası');
+//   } finally {
+//     disconnectDB();
+//   }
+// });
+
+app.get('/getUserAds', async (req, res) => {
+  try {
+    await connectDB();
+
+    const result = await sql.query('SELECT ad_id, ad_name, ad_price, ad_description, ad_description2, ad_description3, ad_adress, ad_photo1 FROM ads');
 
     res.json(result.recordset);
   } catch (err) {
